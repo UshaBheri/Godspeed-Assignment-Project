@@ -6,6 +6,19 @@ tasks:
       datasource: postgres
       data:
         where:
-          id: <% parseInt(inputs.params.id) %>
+          id: 
+          // DELETE /restaurant/:restaurantId - Delete an existing restaurant
+          app.delete('/restaurant/:restaurantId', async (req, res) => {
+          const { restaurantId } = req.params;
+          try {
+            await prisma.restaurant.delete({
+             where: { id: parseInt(restaurantId) },
+            });
+            return res.json({ message: 'Restaurant deleted successfully' });
+            } catch (error) {
+              console.error(error);
+              return res.status(500).json({ message: 'Internal server error' });
+            }
+          });
       config:
         method: Restaurant.delete

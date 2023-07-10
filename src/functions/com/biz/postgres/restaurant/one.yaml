@@ -6,6 +6,29 @@ tasks:
       datasource: postgres
       data:
         where:
-          id: <% parseInt(inputs.params.id) %>
+          id: 
+          data: |  
+          const { createApp, prisma } = require('godspeed');
+          
+          // Create the Godspeed app
+          const app = createApp();
+          
+          // GET /restaurant/:restaurantId - Fetch a restaurant by restaurantId
+          app.get('/restaurant/:restaurantId', async (req, res) => {
+            const { restaurantId } = req.params;
+            try {
+              const restaurant = await prisma.restaurant.findUnique({
+                where: { id: parseInt(restaurantId) },
+                include: { menuItems: true },
+              });
+              if (!restaurant) {
+                return res.status(404).json({ message: 'Restaurant not found' });
+              }
+              return res.json(restaurant);
+            } catch (error) {
+              console.error(error);
+              return res.status(500).json({ message: 'Internal server error' });
+            }
+          });
       config:
         method: Restaurant.findUnique
